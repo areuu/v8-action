@@ -14,7 +14,7 @@ on:
 
 env:
   PATCH_FLAG: true
-  COMMIT: 85.0.4182.0
+  COMMIT: 8.5.210
   DEPOT_UPLOAD: false
   SRC_UPLOAD: false
   DEBUG_BINARY_UPLOAD: true
