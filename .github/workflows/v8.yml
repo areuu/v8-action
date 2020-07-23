@@ -68,21 +68,25 @@ jobs:
     - name: build v8 debug version
       if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        cd v8
         ./tools/dev/gm.py x64.debug d8
 
     - name: build v8 release version
       if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        cd v8
         ./tools/dev/gm.py x64.release d8
         
     - name: 7zip v8 debug binary
       if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        cd v8
         7zip a v8_debug.7z ./out/x64.debug             
 
     - name: 7zip v8 release binary
       if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        cd v8
         7zip a v8_release.7z ./out/x64.debug
         
     # compress this file
@@ -96,6 +100,22 @@ jobs:
     #  run: |
     #    zip -q -r v8.zip v8
     #    7z a v8.7z ./v8.zip -v2048m
+
+    - name: upload v8 debug binary
+      if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ./v8/v8_debug.7z 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        
+    - name: upload v8 release binary
+      if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ./v8/v8_release.7z 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        
+        
     
     # upload depot_tools.zip to cowtransfer
     - name: upload depot_tools
