@@ -73,13 +73,14 @@ jobs:
           
         
     - name: 7zip v8 binary
-      if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
-        7zip a v8_debug.7z ./out/x64.debug
-        
-      if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
-      run: |
-        7zip a v8_release.7z ./out/x64.debug
+        cd v8
+        if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
+        run: |
+          7zip a v8_debug.7z ./out/x64.debug             
+        if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
+        run: |
+          7zip a v8_release.7z ./out/x64.debug
         
         
         
