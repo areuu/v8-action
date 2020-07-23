@@ -66,14 +66,14 @@ jobs:
         sudo ./build/install-build-deps.sh --no-chromeos-fonts
 
     - name: build v8 debug version
-        if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
-        run: |
-          ./tools/dev/gm.py x64.debug d8
+      if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        ./tools/dev/gm.py x64.debug d8
 
     - name: build v8 release version
-        if: env.RELEASE_BINARY_UPLOAD == 'true' && !canceled()
-        run: |
-          ./tools/dev/gm.py x64.release d8
+      if: env.RELEASE_BINARY_UPLOAD == 'true' && !canceled()
+      run: |
+        ./tools/dev/gm.py x64.release d8
         
     - name: 7zip v8 debug binary
       if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
