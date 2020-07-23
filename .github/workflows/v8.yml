@@ -71,7 +71,7 @@ jobs:
         ./tools/dev/gm.py x64.debug d8
 
     - name: build v8 release version
-      if: env.RELEASE_BINARY_UPLOAD == 'true' && !canceled()
+      if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
         ./tools/dev/gm.py x64.release d8
         
