@@ -15,9 +15,10 @@ on:
 env:
   PATCH_FLAG: true
   COMMIT: 85.0.4182.0
-  DEPOT_UPLOAD: true
-  SRC_UPLOAD: true
-  BINARY_UPLOAD: false
+  DEPOT_UPLOAD: false
+  SRC_UPLOAD: false
+  DEBUG_BINARY_UPLOAD: true
+  RELEASE_BINARY_UPLOAD: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -54,14 +55,34 @@ jobs:
       if: env.PATCH_FLAG == 'true' && !cancelled()
       run: |
         cd v8
-        git reset --hard $COMMIT
+        git checkout -b v8_test tags/$COMMIT
         cd ..
         
     - name: build v8
       run: |
         source ~/.bash_profile
         gclient sync -f
-    
+        cd v8
+        sudo ./build/install-build-deps.sh --no-chromeos-fonts
+        if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
+        run: |
+          ./tools/dev/gm.py x64.debug d8
+        if: env.RELEASE_BINARY_UPLOAD == 'true' && !canceled()
+        run: |
+          ./tools/dev/gm.py x64.release d8
+          
+        
+    - name: 7zip v8 binary
+      if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        7zip a v8_debug.7z ./out/x64.debug
+        
+      if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        7zip a v8_release.7z ./out/x64.debug
+        
+        
+        
     # compress this file
     - name: zip depot_tools
       if: env.DEPOT_UPLOAD == 'true' && !cancelled()
@@ -69,10 +90,10 @@ jobs:
         zip -q -r depot_tools.zip depot_tools
         
     # 7zip v8 src
-    - name: 7zip v8_src
-      run: |
-        zip -q -r v8.zip v8
-        7z a v8.7z ./v8.zip -v2048m
+    #- name: 7zip v8_src
+    #  run: |
+    #    zip -q -r v8.zip v8
+    #    7z a v8.7z ./v8.zip -v2048m
     
     # upload depot_tools.zip to cowtransfer
     - name: upload depot_tools
