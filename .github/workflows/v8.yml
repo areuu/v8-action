@@ -68,12 +68,14 @@ jobs:
     - name: build v8 debug version
       if: env.DEBUG_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        source ~/.bash_profile
         cd v8
         ./tools/dev/gm.py x64.debug d8
 
     - name: build v8 release version
       if: env.RELEASE_BINARY_UPLOAD == 'true' && !cancelled()
       run: |
+        source ~/.bash_profile
         cd v8
         ./tools/dev/gm.py x64.release d8
         
